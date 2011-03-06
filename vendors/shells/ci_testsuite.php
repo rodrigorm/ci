@@ -92,7 +92,7 @@ class CiTestSuiteShell extends TestSuiteShell {
 		}
 		$this->_coverage->stop();
 		$writer = new PHP_CodeCoverage_Report_Clover;
-		$writer->process($this->_coverage, ROOT . DS . 'build' . DS . 'logs' . DS . 'clover.xml');
+		$writer->process($this->_coverage, ROOT . DS . 'build' . DS . 'logs' . DS . $this->category . '.xml');
 		$writer = new PHP_CodeCoverage_Report_HTML;
 		$destination = ROOT . DS . 'build' . DS . 'logs' . DS . 'clover' . DS . $this->category . DS;
 		@mkdir($destination);

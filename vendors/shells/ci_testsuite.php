@@ -77,6 +77,12 @@ class CiTestSuiteShell extends TestSuiteShell {
 		$this->_coverage->filter()->addDirectoryToBlacklist(CAKE);
 		$this->_coverage->filter()->addDirectoryToBlacklist(ROOT . DS . 'plugins' . DS);
 		$this->_coverage->filter()->addDirectoryToBlacklist(ROOT . DS . 'vendors' . DS);
+
+		if ($this->isPluginTest) {
+			$this->_coverage->filter()->addDirectoryToBlacklist(APP);
+			$this->_coverage->filter()->removeDirectoryFromBlacklist(App::pluginPath($this->category));
+		}
+
 		$this->_coverage->start($name);
 	}
 
@@ -88,6 +94,8 @@ class CiTestSuiteShell extends TestSuiteShell {
 		$writer = new PHP_CodeCoverage_Report_Clover;
 		$writer->process($this->_coverage, ROOT . DS . 'build' . DS . 'logs' . DS . 'clover.xml');
 		$writer = new PHP_CodeCoverage_Report_HTML;
-		$writer->process($this->_coverage, ROOT . DS . 'build' . DS . 'logs' . DS . 'clover' . DS);
+		$destination = ROOT . DS . 'build' . DS . 'logs' . DS . 'clover' . DS . $this->category . DS;
+		@mkdir($destination);
+		$writer->process($this->_coverage, $destination);
 	}
 }

@@ -23,36 +23,36 @@ class CloverShell extends TestSuiteShell {
 			$this->_stop(0);
 		}
 
+		$this->_startCoverage('Clover Shell');
+
+		$Manager = new TestManager();
+		$Manager->appTest = true;
+		$Manager->pluginTest = null;
+
 		$Reporter =& new JunitReporter(null, array(
-			'app'          => $this->Manager->appTest,
-			'plugin'       => $this->Manager->pluginTest,
+			'app'          => $Manager->appTest,
+			'plugin'       => $Manager->pluginTest,
 			'group'        => ($this->type === 'group'),
 			'codeCoverage' => false
 		));
 
-		$this->_startCoverage('Clover Shell');
-
-		$Manager = new TestManager();
-
 		$this->out(__('Running app all', true));
-		$Manager->appTest = true;
-		$Manager->pluginTest = null;
 		$result = $Manager->runAllTests($Reporter);
 
 		$Manager->appTest = false;
 		$plugins = App::objects('plugin', APP . 'plugins' . DS, false);
 		foreach ($plugins as $plugin) {
-			$this->hr();
+			$Manager->pluginTest = $plugin;
 			$Reporter =& new JunitReporter(null, array(
-				'app'          => $this->Manager->appTest,
-				'plugin'       => $this->Manager->pluginTest,
+				'app'          => $Manager->appTest,
+				'plugin'       => $Manager->pluginTest,
 				'group'        => ($this->type === 'group'),
 				'codeCoverage' => false
 			));
 
+			$this->hr();
 			$plugin = Inflector::underscore($plugin);
 			$this->out(sprintf(__('Running %s all', true), $plugin));
-			$Manager->pluginTest = $plugin;
 			$result = $result && $Manager->runAllTests($Reporter);
 		}
 

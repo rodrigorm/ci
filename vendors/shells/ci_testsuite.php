@@ -1,8 +1,10 @@
 <?php
 require_once CAKE . 'console' . DS . 'libs' . DS . 'testsuite.php';
 
-class CloverShell extends TestSuiteShell {
+class CiTestsuiteShell extends TestSuiteShell {
 	protected $_coverage;
+
+	public $doCoverage = false;
 
 /**
  * Help screen
@@ -12,16 +14,16 @@ class CloverShell extends TestSuiteShell {
  */
 	function help() {
 		$this->out('Usage: ');
-		$this->out("\tcake clover");
+		$this->out("\tcake ci_testsuite");
+		$this->nl();
+		$this->out('Add cov to generate Clover Code Coverage report');
+		$this->out("\tcake ci_testsuite cov");
 	}
 
 	function main() {
+		$this->doCoverage = in_array('cov', $this->args);
+		
 		App::import('Lib', 'Ci.JunitReporter');
-
-		if (!extension_loaded('xdebug')) {
-			$this->out(__('You must install Xdebug to use the CakePHP(tm) Code Coverage Analyzation. Download it from http://www.xdebug.org/docs/install', true));
-			$this->_stop(0);
-		}
 
 		$this->_startCoverage('Clover Shell');
 
@@ -61,6 +63,16 @@ class CloverShell extends TestSuiteShell {
 	}
 
 	protected function _startCoverage($name) {
+		if (!$this->doCoverage) {
+			return;
+		}
+
+		if (!extension_loaded('xdebug')) {
+			$this->out(__('You must install Xdebug to use the CakePHP(tm) Code Coverage Analyzation. Download it from http://www.xdebug.org/docs/install', true));
+			$this->_stop(0);
+		}
+
+
 		require_once 'PHP/CodeCoverage.php';
 		require_once 'PHP/CodeCoverage/Report/Clover.php';
 		require_once 'PHP/CodeCoverage/Report/HTML.php';
@@ -73,6 +85,9 @@ class CloverShell extends TestSuiteShell {
 	}
 
 	protected function _stopCoverage() {
+		if (!$this->doCoverage) {
+			return;
+		}
 		$this->_coverage->stop();
 		$writer = new PHP_CodeCoverage_Report_Clover;
 		$writer->process($this->_coverage, ROOT . DS . 'build' . DS . 'logs' . DS . 'clover.xml');

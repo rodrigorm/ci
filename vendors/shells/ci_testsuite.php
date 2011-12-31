@@ -74,9 +74,7 @@ class CiTestsuiteShell extends TestSuiteShell {
 
 		require 'PHP/CodeCoverage/Autoload.php';
 		$this->_coverage = new PHP_CodeCoverage();
-		$this->_coverage->filter()->addDirectoryToBlacklist(CAKE);
-		$this->_coverage->filter()->addDirectoryToBlacklist(ROOT . DS . 'plugins' . DS);
-		$this->_coverage->filter()->addDirectoryToBlacklist(ROOT . DS . 'vendors' . DS);
+		$this->_coverage->filter()->addDirectoryToWhitelist(APP);
 
 		$this->_coverage->start($name);
 	}

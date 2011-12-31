@@ -72,10 +72,7 @@ class CiTestsuiteShell extends TestSuiteShell {
 			$this->_stop(0);
 		}
 
-
-		require_once 'PHP/CodeCoverage.php';
-		require_once 'PHP/CodeCoverage/Report/Clover.php';
-		require_once 'PHP/CodeCoverage/Report/HTML.php';
+		require 'PHP/CodeCoverage/Autoload.php';
 		$this->_coverage = new PHP_CodeCoverage();
 		$this->_coverage->filter()->addDirectoryToBlacklist(CAKE);
 		$this->_coverage->filter()->addDirectoryToBlacklist(ROOT . DS . 'plugins' . DS);

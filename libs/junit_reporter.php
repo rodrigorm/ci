@@ -56,6 +56,13 @@ class JunitReporter extends CakeCliReporter {
 		$this->_methodAssertions = 0;
 		$this->_methodFailures = array();
 		parent::paintMethodStart($method);
+
+		if (substr($method, 0, 4) !== 'test') {
+			return;
+		}
+		if (isset($this->params['coverage'])) {
+			$this->params['coverage']->start(sprintf('%s::%s()', $this->_testCaseName, $method));
+		}
 	}
 
 	function paintMethodEnd($method) {
@@ -70,6 +77,10 @@ class JunitReporter extends CakeCliReporter {
 				$testCase .= '>' . implode('', $this->_methodFailures) . '</testcase>';
 			}
 			$this->_testCases[] = $testCase;
+
+			if (isset($this->params['coverage'])) {
+				$this->params['coverage']->stop();
+			}
 		}
 
 		parent::paintMethodEnd($method);

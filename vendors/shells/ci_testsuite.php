@@ -1,5 +1,6 @@
 <?php
 require_once CAKE . 'console' . DS . 'libs' . DS . 'testsuite.php';
+require_once CAKE . 'tests' . DS . 'lib' . DS . 'code_coverage_manager.php';
 
 class CiTestsuiteShell extends TestSuiteShell {
 	protected $_coverage;
@@ -35,7 +36,8 @@ class CiTestsuiteShell extends TestSuiteShell {
 			'app'          => $Manager->appTest,
 			'plugin'       => $Manager->pluginTest,
 			'group'        => ($this->type === 'group'),
-			'codeCoverage' => false
+			'codeCoverage' => false,
+			'coverage'     => $this->_coverage
 		));
 
 		$this->out(__('Running app all', true));
@@ -49,7 +51,8 @@ class CiTestsuiteShell extends TestSuiteShell {
 				'app'          => $Manager->appTest,
 				'plugin'       => $Manager->pluginTest,
 				'group'        => ($this->type === 'group'),
-				'codeCoverage' => false
+				'codeCoverage' => false,
+				'coverage'     => $this->_coverage
 			));
 
 			$this->hr();
@@ -75,15 +78,12 @@ class CiTestsuiteShell extends TestSuiteShell {
 		require 'PHP/CodeCoverage/Autoload.php';
 		$this->_coverage = new PHP_CodeCoverage();
 		$this->_coverage->filter()->addDirectoryToWhitelist(APP);
-
-		$this->_coverage->start($name);
 	}
 
 	protected function _stopCoverage() {
 		if (!$this->doCoverage) {
 			return;
 		}
-		$this->_coverage->stop();
 		$writer = new PHP_CodeCoverage_Report_Clover;
 		$writer->process($this->_coverage, ROOT . DS . 'build' . DS . 'logs' . DS . 'clover.xml');
 		$writer = new PHP_CodeCoverage_Report_HTML;
